@@ -11,6 +11,7 @@ import {
   X,
   LogOut, // Close Icon
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 
 interface SidebarProps {
@@ -20,12 +21,12 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Monitors", href: "/monitors", icon: Activity },
     { name: "Incidents", href: "/incidents", icon: AlertTriangle },
-    { name: "Analytics", href: "/analytics", icon: BarChart2 },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
@@ -100,17 +101,20 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="p-4 border-t border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
             <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold text-white shadow-md">
-              JD
+              {session?.user?.name.slice(0, 2).toUpperCase() || ""}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                Jane Doe
+                {session?.user?.name || ""}
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                sample@example.com
+                {session?.user?.email || ""}
               </p>
             </div>
-            <button onClick={()=>signOut()} className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
+            <button
+              onClick={() => signOut()}
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+            >
               <LogOut size={16} />
             </button>
           </div>

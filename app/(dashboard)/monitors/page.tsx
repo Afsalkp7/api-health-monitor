@@ -1,10 +1,22 @@
 "use client";
 import { MonitorListItem } from "@/app/types/dashboard";
-import { MoreVertical, Search, Plus, Loader2 } from "lucide-react";
+import {
+  MoreVertical,
+  Search,
+  Plus,
+  Loader2,
+  Eye,
+  Edit,
+  Play,
+  Pause,
+  Trash,
+} from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 // Mock Data (Region Removed)
 // const monitors: MonitorListItem[] = [
 //   {
@@ -36,6 +48,52 @@ export default function MonitorListPage() {
   const [monitors, setMonitors] = useState<MonitorListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+
+  const toggleMonitorStatus = async (id: string, currentStatus: boolean) => {
+    try {
+      // Update local state immediately (Optimistic UI)
+      setMonitors(
+        monitors.map((m) =>
+          m.id === id ? { ...m, isActive: !currentStatus } : m,
+        ),
+      );
+
+      // Call API
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/monitor/${id}/toggle`,
+        {
+          isActive: !currentStatus,
+        },
+        {
+          headers: { Authorization: `Bearer ${session?.user.accessToken}` },
+        },
+      );
+    } catch (error) {
+      console.error("Toggle failed", error);
+      fetchMonitors(); // Revert on error
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      // 1. Optimistic Update: Remove from UI immediately
+      setMonitors((prev) => prev.filter((m) => m.id !== id));
+      setActiveMenuId(null); // Close the menu
+
+      // 2. API Call
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/monitor/${id}`,
+        {
+          headers: { Authorization: `Bearer ${session?.user.accessToken}` },
+        },
+      );
+    } catch (error) {
+      console.error("Delete failed", error);
+      setError("Failed to delete monitor.");
+      fetchMonitors(); // Revert changes on error
+    }
+  };
 
   const fetchMonitors = async () => {
     if (!session?.user) return;
@@ -79,8 +137,8 @@ export default function MonitorListPage() {
     <DashboardLayout title="System Monitors">
       {/* Table Content */}
       <div className="p-8">
-        <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden min-h-[70vh]">
+          <div className="overflow-x-auto min-h-[70vh]">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
@@ -171,9 +229,89 @@ export default function MonitorListPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
-                        <MoreVertical size={18} />
-                      </button>
+                      <div className="relative inline-block text-left">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMenuId(
+                              activeMenuId === monitor.id ? null : monitor.id,
+                            );
+                          }}
+                          className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        >
+                          <MoreVertical size={18} />
+                        </button>
+
+                        {/* DROPDOWN MENU */}
+                        {activeMenuId === monitor.id && (
+                          <>
+                            {/* Invisible backdrop to close menu on click outside */}
+                            <div
+                              className="fixed inset-0 z-40"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveMenuId(null);
+                              }}
+                            />
+
+                            {/* Positioning Fix:
+           - right-0: Aligns with the right edge of the button
+           - mt-2: Adds a small gap below the button
+           - z-50: Ensures it sits above other table rows
+        */}
+                            <div className="absolute right-0 z-50 mt-2 w-48 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100 origin-top-right">
+                              <Link
+                                href={`/monitors/${monitor.id}`}
+                                className="flex items-center gap-2 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                              >
+                                <Eye size={16} /> View Details
+                              </Link>
+
+                              <Link
+                                href={`/monitors/${monitor.id}/edit`}
+                                className="flex items-center gap-2 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                              >
+                                <Edit size={16} /> Edit Monitor
+                              </Link>
+
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent row click
+                                  toggleMonitorStatus(
+                                    monitor.id,
+                                    !!monitor.isActive,
+                                  ); // Ensure boolean
+                                  setActiveMenuId(null); // Close menu after click
+                                }}
+                                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
+                              >
+                                {monitor.isActive ? (
+                                  <Pause size={16} className="text-amber-500" />
+                                ) : (
+                                  <Play
+                                    size={16}
+                                    className="text-emerald-500"
+                                  />
+                                )}
+                                {monitor.isActive
+                                  ? "Pause Monitor"
+                                  : "Activate Monitor"}
+                              </button>
+
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(monitor.id);
+                                  setActiveMenuId(null);
+                                }}
+                                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left border-t border-slate-100 dark:border-slate-800"
+                              >
+                                <Trash size={16} /> Delete
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
