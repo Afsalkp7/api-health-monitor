@@ -76,28 +76,6 @@ export default function AuthCard({
             </div>
           )}
         </div>
-
-        {/* Legal Links */}
-        <div className="mt-8 flex justify-center space-x-6 text-xs text-slate-400 dark:text-slate-500 font-medium">
-          <Link
-            href="#"
-            className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-          >
-            Privacy Policy
-          </Link>
-          <Link
-            href="#"
-            className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-          >
-            Terms of Service
-          </Link>
-          <Link
-            href="#"
-            className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-          >
-            Status
-          </Link>
-        </div>
       </main>
 
       {/* --- DARK MODE TOGGLE --- */}

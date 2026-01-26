@@ -3,7 +3,7 @@ export interface MonitorListItem {
   id: string;
   name: string;
   environment: string; // e.g., "Production", "Staging"
-
+  isActive: boolean;
   status: "UP" | "DOWN" | "MAINTENANCE";
   method: "GET" | "POST" | "PUT" | "DELETE";
   url: string;
