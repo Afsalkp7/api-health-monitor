@@ -7,6 +7,8 @@ declare module "next-auth" {
       name: string;
       email: string;
       accessToken: string;
+      refreshToken?: string;
+      accessTokenExpires?: number;
     };
   }
 
@@ -15,6 +17,8 @@ declare module "next-auth" {
     name: string;
     email: string;
     accessToken: string;
+    refreshToken?: string;
+    accessTokenExpires?: number;
   }
 }
 

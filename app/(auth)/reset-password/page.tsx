@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import AuthCard from "@/components/auth/AuthCard";
 import ResendOtp from "@/components/auth/ResendOtp"; // Import the new component
 
-export default function ResetPasswordPage() {
+function ResetPasswordPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
@@ -14,7 +14,7 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPass, setShowPass] = useState(false);
-  
+
   // OTP State (Array of 6) & Password State
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [password, setPassword] = useState("");
@@ -39,11 +39,11 @@ export default function ResetPasswordPage() {
   // --- Submit Logic ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const otpValue = otp.join("");
     if (otpValue.length !== 6) {
-        setError("Please enter the full 6-digit code");
-        return;
+      setError("Please enter the full 6-digit code");
+      return;
     }
 
     setLoading(true);
@@ -55,9 +55,9 @@ export default function ResetPasswordPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: email, 
+          email: email,
           otp: otpValue,
-          password: password // Only sending password, not confirmPassword
+          password: password, // Only sending password, not confirmPassword
         }),
       });
 
@@ -69,7 +69,6 @@ export default function ResetPasswordPage() {
 
       // Success -> Redirect to Login
       router.push("/login?reset=success");
-      
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -82,7 +81,8 @@ export default function ResetPasswordPage() {
       title="Set New Password"
       subtitle={`Enter the code sent to ${email} and your new password.`}
       // Pass empty footer props because we handle ResendOtp manually below
-      footerText="" footerLink="" 
+      footerText=""
+      footerLink=""
     >
       {error && (
         <div className="mb-4 p-3 rounded bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-center">
@@ -91,7 +91,6 @@ export default function ResetPasswordPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        
         {/* 1. OTP Input Section */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
@@ -101,7 +100,9 @@ export default function ResetPasswordPage() {
             {otp.map((digit, index) => (
               <input
                 key={index}
-                ref={(el) => { inputRefs.current[index] = el }}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
                 type="text"
                 maxLength={1}
                 value={digit}
@@ -119,7 +120,10 @@ export default function ResetPasswordPage() {
             New Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Lock
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              size={18}
+            />
             <input
               type={showPass ? "text" : "password"}
               required
@@ -146,9 +150,20 @@ export default function ResetPasswordPage() {
           {loading ? "Resetting..." : "Reset Password"}
         </button>
       </form>
-      
+
       {/* Resend OTP Component */}
       <ResendOtp email={email} />
     </AuthCard>
+  );
+}
+
+
+export default function ResetPasswordPage() {
+  return (
+    // <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 p-4">/
+      <Suspense fallback={<div className="text-white">Loading...</div>}>
+        <ResetPasswordPageContent />
+      </Suspense>
+    // </div>
   );
 }

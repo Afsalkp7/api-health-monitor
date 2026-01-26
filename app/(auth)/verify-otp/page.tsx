@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react"; 
 import AuthCard from "@/components/auth/AuthCard";
 import ResendOtp from "@/components/auth/ResendOtp"; // Import reusable component
 
-export default function VerifyOtpPage() {
+function VerifyOtpPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
@@ -109,4 +109,12 @@ export default function VerifyOtpPage() {
       <ResendOtp email={email} />
     </AuthCard>
   );
+}
+
+export default function  VerifyOtpPage() {
+     return (
+          <Suspense fallback={<div className="text-white">Loading...</div>}>
+            <VerifyOtpPageContent />
+          </Suspense>
+      );
 }
