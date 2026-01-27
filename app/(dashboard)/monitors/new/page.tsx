@@ -86,7 +86,7 @@ export default function CreateMonitorPage() {
         friendlyName,
         url,
         method,
-        headers: !headers?.length  ? [] : [headersObj], // Send as object
+        headers: !headers?.length ? [] : [headersObj], // Send as object
         body: body,
         frequency,
         timeout,
