@@ -113,7 +113,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
             <button
               onClick={() => signOut()}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+              className="text-slate-400 hover:text-slate-600 hover:cursor-pointer dark:hover:text-white transition-colors"
             >
               <LogOut size={16} />
             </button>
