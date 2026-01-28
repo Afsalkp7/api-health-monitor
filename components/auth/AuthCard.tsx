@@ -78,17 +78,7 @@ export default function AuthCard({
         </div>
       </main>
 
-      {/* --- DARK MODE TOGGLE --- */}
-      <button
-        onClick={() => setDarkMode(!darkMode)}
-        className="fixed bottom-6 right-6 p-3 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-[60] group hover:scale-110 transition-all"
-      >
-        {darkMode ? (
-          <Sun size={20} className="text-yellow-400" />
-        ) : (
-          <Moon size={20} className="text-slate-600" />
-        )}
-      </button>
+     
     </div>
   );
 }
