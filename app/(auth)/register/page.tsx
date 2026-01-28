@@ -37,8 +37,6 @@ export default function RegisterPage() {
       }
 
       // 2. Success - Redirect to OTP Page
-      // We pass the email in the URL so the Verify OTP page can read it
-      // Example: /verify-otp?email=user@example.com
       router.push(`/verify-otp?email=${encodeURIComponent(form.email)}`);
       
     } catch (err: any) {
