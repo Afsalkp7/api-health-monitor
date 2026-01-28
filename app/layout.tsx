@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers"; // Import the wrapper
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
         {/* Wrap everything in Providers so useSession works everywhere */}
         <Providers>
             {children}
+            <Toaster position="top-right" richColors closeButton />
         </Providers>
       </body>
     </html>
