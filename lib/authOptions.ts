@@ -100,7 +100,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       // Initial Sign In
       if (user) {
         const u = user as any;
@@ -110,9 +110,13 @@ export const authOptions: NextAuthOptions = {
           accessToken: u.accessToken,
           refreshToken: u.refreshToken,
           accessTokenExpires: u.accessTokenExpires,
+          name: u.name
         };
       }
 
+      if (trigger === "update" && session?.user?.name) {
+        token.name = session.user.name;
+      }
       // Check if token is valid (with 10s buffer)
       if (Date.now() < (token.accessTokenExpires as number) - 10000) {
         return token;
