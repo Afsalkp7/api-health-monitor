@@ -2,7 +2,7 @@
 
 import { useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react"; 
+import { signIn } from "next-auth/react";
 import AuthCard from "@/components/auth/AuthCard";
 import ResendOtp from "@/components/auth/ResendOtp"; // Import reusable component
 
@@ -71,7 +71,7 @@ function VerifyOtpPageContent() {
       title="Verify your email"
       subtitle={`We've sent a 6-digit verification code to ${email}`}
       // NOTE: We removed footerText props here to use the ResendOtp component instead
-      footerText="" 
+      footerText=""
       footerLink=""
     >
       {error && (
@@ -81,17 +81,19 @@ function VerifyOtpPageContent() {
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="flex justify-between gap-2 mb-8">
+        <div className="flex justify-between gap-1 min-[430px]:gap-2 mb-8">
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => { inputRefs.current[index] = el }}
+              ref={(el) => {
+                inputRefs.current[index] = el;
+              }}
               type="text"
               maxLength={1}
               value={digit}
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
-              className="w-12 h-12 md:w-12 md:h-12 text-center text-2xl font-bold bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+              className="w-8 h-8 min-[400px]:w-12 min-[430px]:h-12 text-center text-2xl font-bold bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
             />
           ))}
         </div>
@@ -111,10 +113,10 @@ function VerifyOtpPageContent() {
   );
 }
 
-export default function  VerifyOtpPage() {
-     return (
-          <Suspense fallback={<div className="text-white">Loading...</div>}>
-            <VerifyOtpPageContent />
-          </Suspense>
-      );
+export default function VerifyOtpPage() {
+  return (
+    <Suspense fallback={<div className="text-white">Loading...</div>}>
+      <VerifyOtpPageContent />
+    </Suspense>
+  );
 }
