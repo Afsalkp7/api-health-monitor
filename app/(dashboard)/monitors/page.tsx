@@ -23,7 +23,7 @@ export default function MonitorListPage() {
   const [loading, setLoading] = useState(true);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
-  // --- ACTIONS (unchanged) ---
+  
   const toggleMonitorStatus = async (id: string, currentStatus: boolean) => {
     try {
       setMonitors(
@@ -89,13 +89,11 @@ export default function MonitorListPage() {
       <div className="p-8">
         <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden min-h-[70vh]">
           
-          {/* 1. LOADING STATE: Skeleton Table (Prevents White Flash) */}
           {loading ? (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
-                    {/* Same headers as real table to prevent width jumps */}
                     {["Monitor Name", "Status", "Method", "Endpoint URL", "Latency", "History", ""].map((h, i) => (
                       <th key={i} className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{h}</th>
                     ))}

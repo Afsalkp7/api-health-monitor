@@ -32,6 +32,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // "Negative Lookahead": Match EVERYTHING except nextjs internals, static files, and images
   matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };

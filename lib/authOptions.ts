@@ -84,7 +84,6 @@ export const authOptions: NextAuthOptions = {
             email: response.data.user.email,
             accessToken: response.data.accessToken,
             refreshToken: response.data.refreshToken,
-            // Capture the 'expiresIn' (900s) from the initial login response
             accessTokenExpires: Date.now() + (response.data.expiresIn * 1000),
           } as any;
         } catch (error: any) {
